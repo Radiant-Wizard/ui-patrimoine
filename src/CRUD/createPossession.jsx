@@ -18,7 +18,7 @@ const CreatePossessionForm = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     try {
       const response = await fetch('/possession', {
         method: "POST",

@@ -12,7 +12,7 @@ const PossessionTable = () => {
   const [patrimoineValue, setPatrimoineValue] = useState(0);
 
   useEffect(() => {
-    fetch("https://my-backend.onrender.com/possession")
+    fetch("https://patrimoine-economique-naxg.onrender.com/possession")
       .then((response) => response.json())
       .then((data) => {
         const possessionsData =
