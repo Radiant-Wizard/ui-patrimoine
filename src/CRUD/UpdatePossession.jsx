@@ -1,15 +1,11 @@
-import React, { useState} from "react";
-import {Link} from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+
 const UpdatePossessionForm = () => {
   const [formData, setFormData] = useState({
-    possesseur: "",
-    libelle: "",
-    valeur: "",
-    dateDebut: "",
-    dateFin: "",
-    taux: "",
+    currentLibelle: "",
+    newLibelle: "",
   });
-
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -22,24 +18,24 @@ const UpdatePossessionForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`/possession/${formData.libelle}`, {
+      const response = await fetch(`/possession/${formData.currentLibelle}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          dateFin: formData.dateFin,
+          libelle: formData.newLibelle,
         }),
       });
 
       if (response.ok) {
-        alert("Update successful!");
+        alert("Possession renamed successfully!");
       } else {
         const errorData = await response.json();
-        alert(`Update failed: ${errorData.error}`);
+        alert(`Rename failed: ${errorData.error}`);
       }
     } catch (error) {
-      console.error("There was an error updating the possession!", error);
+      console.error("Error renaming the possession!", error);
     }
   };
 
@@ -47,38 +43,40 @@ const UpdatePossessionForm = () => {
     <div className="update-page">
       <form onSubmit={handleSubmit} className="update-form">
         <label>
-          Libelle:
+         Libelle:
           <br />
           <input
             type="text"
-            name="libelle"
-            value={formData.libelle}
+            name="currentLibelle"
+            value={formData.currentLibelle}
             onChange={handleChange}
+            placeholder="Enter current libelle"
             required
           />
         </label>
         <br />
         <label>
-          Date Fin:
+          New Libelle:
           <br />
           <input
-            type="date"
-            name="dateFin"
-            value={formData.dateFin}
+            type="text"
+            name="newLibelle"
+            value={formData.newLibelle}
             onChange={handleChange}
+            placeholder="Enter new libelle"
             required
           />
         </label>
         <br />
-        <button type="submit" className="btn btn-dark">
+        <button type="submit" className="btn-dark">
           UPDATE
         </button>
       </form>
       <Link to='/possession'>
-      <button type="button" className="btn btn-dark" id="return-update">
-         GO BACK
+        <button type="button" className="btn-dark" id="return-update">
+          GO BACK
         </button>
-        </Link>
+      </Link>
     </div>
   );
 };
