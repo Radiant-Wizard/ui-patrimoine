@@ -66,7 +66,6 @@ const PossessionTable = () => {
 
       if (response.ok) {
         alert("Possession closed successfully");
-        // Refresh the possessions data
         const updatedResponse = await fetch("https://patrimoine-economique-naxg.onrender.com/possession");
         const updatedData = await updatedResponse.json();
         setPossessions(
@@ -135,7 +134,7 @@ const PossessionTable = () => {
             <th>Date Fin</th>
             <th>Amortissement (%)</th>
             <th>Valeur Actuelle</th>
-            <th>Actions</th> {/* New column for actions */}
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
