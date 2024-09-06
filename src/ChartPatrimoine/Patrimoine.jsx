@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Possession from "../Possession";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -14,8 +15,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Link } from "react-router-dom";
 import { Container, Navbar, NavDropdown } from "react-bootstrap";
+import Button from "react-bootstrap/Button";
+import "../myCSS.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,6 +29,36 @@ ChartJS.register(
 );
 
 const Patrimoine = () => {
+  useEffect(() => {
+    fetch("https://patrimoine-economique-naxg.onrender.com/possession")
+      .then((response) => response.json())
+      .then((data) => {
+        const possessionsData =
+          data
+            .find((item) => item.model === "Patrimoine")
+            ?.data?.possessions.map(
+              (item) =>
+                new Possession(
+                  item.possesseur.nom,
+                  item.libelle,
+                  item.valeur,
+                  new Date(item.dateDebut),
+                  item.dateFin ? new Date(item.dateFin) : null,
+                  item.tauxAmortissement,
+                  item.jour,
+                  item.valeurConstante
+                )
+            ) || [];
+        console.log(data);
+
+        setPossessions(possessionsData);
+      })
+      .catch((error) => console.error("Error fetching data:", error));
+  }, []);
+
+  const [possessions, setPossessions] = useState([]);
+  const [selectedDate, setSelectedDate] = useState("");
+  const [patrimoineValue, setPatrimoineValue] = useState(0);
   const [dateDebut, setDateDebut] = useState(new Date());
   const [dateFin, setDateFin] = useState(new Date());
   const [jour, setJour] = useState(1);
@@ -42,6 +74,10 @@ const Patrimoine = () => {
       },
     ],
   });
+
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
+  };
 
   const handleGetValeur = async () => {
     try {
@@ -76,10 +112,24 @@ const Patrimoine = () => {
     }
   };
 
+  const calculateCurrentValue = () => {
+    const selectedDateObj = new Date(selectedDate);
+    if (isNaN(selectedDateObj.getTime())) {
+      alert("Please select a valid date");
+      return;
+    }
+    const totalValue = possessions.reduce(
+      (acc, possession) => acc + possession.getValeur(selectedDateObj),
+      0
+    );
+    setPatrimoineValue(totalValue);
+  };
+
   return (
     <div
       className="chart bg-dark text-light p-4"
       style={{ minHeight: "100vh", minWidth: "100dvw" }}
+      id="chart-page"
     >
       <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
         <Container>
@@ -219,6 +269,32 @@ const Patrimoine = () => {
             },
           }}
         />
+      </div>
+
+      <div className="footer my-4">
+        <h2>Calcul du Patrimoine</h2>
+        <div className="mb-3">
+          <label htmlFor="datePicker" className="form-label">
+            Select Date:
+          </label>
+          <input
+            type="date"
+            className="form-control"
+            id="datePicker"
+            value={selectedDate}
+            onChange={handleDateChange}
+          />
+        </div>
+        <Button
+          onClick={calculateCurrentValue}
+          variant="primary"
+          className="mb-3"
+        >
+          Valider
+        </Button>
+        <h4>
+          Valeur du Patrimoine: <span>{patrimoineValue.toFixed(2)} Ar</span>
+        </h4>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import Possession from "../Possession";
 import Button from "react-bootstrap/Button";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -6,10 +6,10 @@ import "../myCSS.css";
 import { Link } from "react-router-dom";
 import { Navbar, Table } from "react-bootstrap";
 import NavDropdown from "react-bootstrap/NavDropdown";
+
+
 const PossessionTable = () => {
   const [possessions, setPossessions] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [patrimoineValue, setPatrimoineValue] = useState(0);
 
   useEffect(() => {
     fetch("https://patrimoine-economique-naxg.onrender.com/possession")
@@ -37,24 +37,6 @@ const PossessionTable = () => {
       })
       .catch((error) => console.error("Error fetching data:", error));
   }, []);
-
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-  };
-
-  const calculateCurrentValue = () => {
-    const selectedDateObj = new Date(selectedDate);
-    if (isNaN(selectedDateObj.getTime())) {
-      alert("Please select a valid date");
-      return;
-    }
-    const totalValue = possessions.reduce(
-      (acc, possession) => acc + possession.getValeur(selectedDateObj),
-      0
-    );
-    setPatrimoineValue(totalValue);
-  };
-
   const handleClose = async (libelle) => {
     try {
       const response = await fetch(`/possession/${libelle}/close`, {
@@ -95,6 +77,8 @@ const PossessionTable = () => {
     }
   };
 
+
+
   return (
     <div className="container-fluid" id="container-possessionTable">
       <Navbar id="Navbar" bg="dark" variant="dark" expand="lg">
@@ -134,7 +118,7 @@ const PossessionTable = () => {
             <th>Date Fin</th>
             <th>Amortissement (%)</th>
             <th>Valeur Actuelle</th>
-            <th>Actions</th>
+            <th>Actions</th> {/* New column for actions */}
           </tr>
         </thead>
         <tbody>
@@ -160,31 +144,6 @@ const PossessionTable = () => {
           ))}
         </tbody>
       </Table>
-      <div className="footer my-4">
-      <h2>Calcul du Patrimoine</h2>
-      <div className="mb-3">
-        <label htmlFor="datePicker" className="form-label">
-          Select Date:
-        </label>
-        <input
-          type="date"
-          className="form-control"
-          id="datePicker"
-          value={selectedDate}
-          onChange={handleDateChange}
-        />
-      </div>
-      <Button
-        onClick={calculateCurrentValue}
-        variant="primary"
-        className="mb-3"
-      >
-        Valider
-      </Button>
-      <h4>
-        Valeur du Patrimoine: <span>{patrimoineValue.toFixed(2)} Ar</span>
-      </h4>
-    </div>
 
       <div className="d-flex justify-content-center my-4">
         <Link to="/create-possession" className="mx-2">
