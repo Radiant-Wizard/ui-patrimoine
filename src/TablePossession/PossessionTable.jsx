@@ -36,7 +36,7 @@ const PossessionTable = () => {
         setPossessions(possessionsData);
       })
       .catch((error) => console.error("Error fetching data:", error));
-  }, []);
+  });
   const handleClose = async (libelle) => {
     try {
       const response = await fetch(`/possession/${libelle}/close`, {
